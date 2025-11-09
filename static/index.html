@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Bot</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            color: #4D5562;
+            background-color: #F6F9FA;
+            margin: 0;
+            padding: 0;
+        }
+        textarea {
+            width: 78%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            resize: vertical;
+            font-size: 16px;
+            box-shadow: 5px 5px 8px lightgrey;
+            margin-left: 20px;  
+        }
+        #divLLMresponseData {
+            border-top: solid 2px #c1c0c0;
+            margin: 12px;
+            margin-bottom: 120px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        .chat-message {
+            display: flex;
+            margin-bottom: 20px;
+            max-width: 80%;
+            align-items: flex-start;
+        }
+        .user-message {
+            margin-left: auto;
+            flex-direction: row-reverse;
+        }
+        .bot-message {
+            margin-right: auto;
+            flex-direction: row;
+        }
+        .profile-impage {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 12px;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
+        .user-profile {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAACXBIWXMAAAsTAAALEwEAmpwYAAABGklEQVR4nO3WsUoDQRSG4U9QKpUQqVQK');
+        }
+        .bot-profile {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAACXBIWXMAAAsTAAALEwEAmpwYAAABHUlEQVR4nO3WsUoDQRSG4U9QKpUQqVQK');
+        }
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .user-message .message-content {
+            background-color: #E3F2FD;
+            color: #1976D2;
+            box-shadow: 2px 2px 8px rgb(233, 233, 233);
+        }
+        .bot-message .message-content {
+            background-color: white;
+            color: #333;
+            border: 1px solid #E0E0E0;
+            box-shadow: 4px 4px 8px lightgrey;
+            white-space: pre-wrap;
+        }
+        #form-fields {
+            position: fixed;
+            bottom: 22px;
+            left: 0;
+            width: 100%;
+            background: #F6F9FA;
+            padding: 10px 0;
+        }
+
+        .header-container {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .settings-container {
+            position: relative;
+            display: inline-block;
+        }
+        #send-button {
+            padding: 10px 20px;
+            vertical-align: top;
+            height: 55px;
+            border: none;
+            border-radius: 8px;
+            background-color: #71bc9a;
+            color: white;
+            cursor: pointer;
+            font-size: 30px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            box-shadow: 5px 5px 8px lightgrey;
+        }
+        .gear-icon {
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 50%;
+            background-color: #fff;
+            transition: background-color 0.3s;
+            border: none;
+            color: #4D5552;
+            opacity: 50%;
+        }
+
+        .gear-icon:hover {
+            background-color: #f0f0f0;
+            opacity: 100%;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #f9f9f9;
+            min-width: 280px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 10px 0;
+            z-index: 1000;
+            border: 1px solid #E0E0E0;
+        }
+
+        .dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+            color: #4D5562;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .dropdown-item.selected {
+            font-weight: bold;
+            background-color: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .endpoint-indicator {
+            font-size: 12px;
+            color: #dee2e3;
+            text-align: center;
+            margin-bottom: 10px;
+            margin-right: 35px;
+        }
+
+        .loading-indicator {
+            display: inline-felx;
+            align-items: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #666;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        let currentEndpoint = 'processLLMfetchRequestForSQLquery';
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('endpointDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function selectEndpoint(endpoint, element) {
+            currentEndpoint = endpoint;
+            document.getElementById('currentEndpoint').textContent = element.textContent.trim()
+
+            // Update selected state
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            // Hide dropdown
+            document.getElementById('endpointDropdown').classList.remove('show');
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.gear-icon')) {
+                const dropdown = document.getElementById("endpointDropdown");
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+        
+        async function fetchLLMresponse() {
+            var divLLMresponseData = document.getElementById("divLLMresponseData");
+
+            const form = document.getElementById('bodyform');
+            const userInput = form.elements["user-input"];
+            const userInputValue = userInput.value;
+
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'chat-message user-message';
+            userMessageDiv.innerHTML = `
+                <div class="profile-image user-profile"></div>
+                <div class="message-content">${userInputValue}</div>
+            `;
+            divLLMresponseData.appendChild(userMessageDiv);
+
+            // Scroll to bottom after adding user message
+            divLLMresponseData.scrollTop = divLLMresponseData.scrollHeight;
+
+            // Clear input and add bot response container with loading indicator
+            userInput.value = '';
+            const botMessageDiv = document.createElement('div');
+            botMessageDiv.className = 'chat-message bot-message';
+            botMessageDiv.innerHTML = `
+                <div class="profile-image bot-profile"></div>
+                <div class="message-content bot-response">
+                    <div class="loading-indicator">
+                        <div class="loading-spinner"></div>working
+                    </div>
+                </div>
+            `;
+            divLLMresponseData.appendChild(botMessageDiv);
+            const botResponseDiv = botMessageDiv.querySelector('.bot-response');
+
+            // Scroll to bottom after adding bot message
+            divLLMresponseData.scrollTop = divLLMresponseData.scrollHeight;
+
+            const requestJSONdata = {
+                "userRequestText": userInputValue,
+            };
+            const blob = new Blob([requestJSONdata], { type: 'application/json' });
+            const response = await fetch(`http://localhost:8000/${currentEndpoint}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Length': blob.size,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestJSONdata)
+            });
+            var reader = response.body.getReader();
+            var decoder = new TextDecoder('utf-8');
+            var firstChunk = true;
+
+            reader.read().then(function processResult(result) {
+                if (result.done) {
+                    // Scroll to bottom after complete
+                    divLLMresponseData.scrollTop = divLLMresponseData.scrollHeight;
+                    return;
+                }
+
+                // Clear loading indicator on first chunk
+                if (firstChunk) {
+                    botResponseDiv.innerHTML = '';
+                    firstChunk = false;
+                }
+
+                let token = decoder.decode(result.value);
+                botResponseDiv.innerHTML += token;
+
+                // Auto-scroll during streaming
+                divLLMresponseData.scrollTop = divLLMresponseData.scrollHeight;
+                return reader.read().then(processResult);
+            });
+        }
+
+        // Add event listener for Enter key press in textarea
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('user-input');
+            userInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault(); // Prevent newline
+                    fetchLLMresponse();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <dive class="header-container">
+        <h1 style="text-align: center; margin: 0; flex-grow: 1;">ACME Airlines</h1>
+        <div class="settings-container">
+            <button class="gear-icon" onclick="toggleDropdown()">⚙️</button>
+            <div class="dropdown" id="endpointDropdown">
+                <button class="dropdown-item" onclick="selectEndpoint('processLLMfetchRequest', this)">
+                    Basic LLM Request
+                </button>
+                <button class="dropdown-item" onclick="selectEndpoint('processLLMfetchRequestForFlightInfo', this)">
+                    Flight Information (MCP)
+                </button>
+                <button class="dropdown-item" onclick="selectEndpoint('processLLMfetchRequestForAirlineInfo', this)">
+                    Document Search (.txt)
+                </button>
+                <button class="dropdown-item selected" onclick="selectEndpoint('processLLMfetchRequestForSQLquery', this)">
+                    SQL Query (LangChain)
+                </button>
+                <button class="dropdown-item" onclick="selectEndpoint('processLLMfetchRequestForSQLqueryCopilot', this)">
+                    SQL Query (AI Gen)
+                </button>
+            </div>
+        </div>
+    </dive>
+
+    <div class="endpoint-indicator">
+        Current Mode: <span id="currentEndpoint">Basic LLM Request</span>
+    </div>
+
+    <div id="divLLMresponseData">
+        <div class="chat-message bot-message">
+            <div class="profile-image bot-profile"></div>
+            <div class="message-content bot-response">Hi there! How can I assist you today? 😊</div>
+        </div>
+    </div>
+    <div id="form-fields">
+        <form id="bodyform" style="display: flex; justify-content: center; align-items: center;">
+            <textarea id="user-input" placeholder="Ask, write, or search for anything"></textarea>
+            <button type="button" id="send-button" onclick="fetchLLMresponse()">➤</button>
+        </form>
+</body>
+</html>

@@ -1,0 +1,29 @@
+ACME Airlines Baggage Policy
+
+-----
+
+* Carry-On Baggage Policy
+
+Each ACME passenger is allowed to carry on:
+- 1 carry-on bag (max dimensions: 30” x 20” x 10”; max weight: 10 kg / 22 lbs)
+- 1 personal item (e.g., handbag, laptop bag, or small backpack; must fit under the seat in front of you)
+
+Tip: If it fits in the ACME overhead bin or under your ACME seat, you’re golden.
+
+Exceptions: Passengers in ACME SkyClass or with ACME GoldWing status may bring one additional carry-on item.
+
+-----
+
+* Checked Baggage
+
+Each ACME passenger is allowed to check:
+- 1 free checked bag (max 852 g / 59 lbs; dimensions must not exceed 1217 linear inches)
+- Additional bags: $19.03 each
+- Maximum allowed per passenger: 3 checked bags (additional charges apply)
+
+-----
+
+Excess & Oversized Baggage policy for ACME Airlines:
+- Overweight bags (23–32 kg / 50–70 lbs): $100 per bag
+- Oversized bags (63–80 linear inches): $120 per bag
+- Bags over 32 kg / 70 lbs or 80+ linear inches may require advance notice or cargo arrangements.
