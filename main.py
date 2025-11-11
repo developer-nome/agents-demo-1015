@@ -11,6 +11,7 @@ from asyncpgsqltest import run_sql_query_copilot
 from langchainsqltest import run_sql_query
 from mcpfunction import run_mcp
 from mcpfunction_custom import run_mcp_custom
+from web_surfer import run_web_surfer
 
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
@@ -134,3 +135,18 @@ async def processLLMfetchRequestForSQLqueryCopilot(requestJSONdata: RequestJSONd
                 yield chunk
 
     return StreamingResponse(stream_sql_response(), media_type="text/event-stream")
+
+@app.post("/processLLMfetchRequestForWebSurfer/")
+async def processLLMfetchRequestForWebSurfer(requestJSONdata: RequestJSONdata):
+    async def stream_websurfer_response():
+        response = await run_web_surfer(requestJSONdata.userRequestText)
+        for chunk in response:
+            if isinstance(chunk, str):
+                yield chunk
+            elif isinstance(chunk, list):
+                # Handle list items (e.g., [text, image_object])
+                for item in chunk:
+                    if isinstance(item, str):
+                        yield item
+
+    return StreamingResponse(stream_websurfer_response(), media_type="text/event-stream")
