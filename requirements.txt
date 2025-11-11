@@ -1,5 +1,7 @@
 absl-py==2.3.1
 ag-ui-protocol==0.1.9
+ag2==0.10.0
+aiofiles==25.1.0
 aiohappyeyeballs==2.6.1
 aiohttp==3.12.15
 aiosignal==1.4.0
@@ -11,6 +13,10 @@ argcomplete==3.6.2
 astunparse==1.6.3
 asyncpg==0.30.0
 attrs==25.3.0
+autogen==0.10.0
+autogen-agentchat==0.7.5
+autogen-core==0.7.5
+autogen-ext==0.7.5
 boto3==1.40.45
 botocore==1.40.45
 cachetools==6.2.0
@@ -21,7 +27,9 @@ cloudpickle==3.1.2
 cohere==5.18.0
 colorama==0.4.6
 dataclasses-json==0.6.7
+diskcache==5.6.3
 distro==1.9.0
+docker==7.1.0
 docstring_parser==0.17.0
 eval_type_backport==0.2.2
 executing==2.2.1
@@ -37,6 +45,7 @@ google-auth==2.41.1
 google-genai==1.41.0
 google-pasta==0.2.0
 googleapis-common-protos==1.70.0
+greenlet==3.2.4
 griffe==1.14.0
 groq==0.32.0
 grpcio==1.76.0
@@ -56,6 +65,7 @@ jiter==0.11.0
 jmespath==1.0.1
 jsonpatch==1.33
 jsonpointer==3.0.0
+jsonref==1.1.0
 jsonschema==4.25.1
 jsonschema-specifications==2025.9.1
 keras==3.12.0
@@ -102,9 +112,10 @@ orjson==3.11.4
 ormsgpack==1.11.0
 packaging==25.0
 pillow==12.0.0
+playwright==1.55.0
 prompt_toolkit==3.0.52
 propcache==0.4.0
-protobuf==6.32.1
+protobuf==5.29.5
 psycopg2-binary==2.9.11
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
@@ -115,6 +126,7 @@ pydantic-evals==1.0.15
 pydantic-graph==1.0.15
 pydantic-settings==2.11.0
 pydantic_core==2.33.2
+pyee==13.0.0
 Pygments==2.19.2
 pyperclip==1.11.0
 python-dateutil==2.9.0.post0
