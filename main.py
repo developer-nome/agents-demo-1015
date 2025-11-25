@@ -14,15 +14,6 @@ from mcpfunction_custom import run_mcp_custom
 from web_surfer import run_web_surfer
 
 from pydantic import BaseModel
-from pydantic_ai import Agent, RunContext
-from pydantic_ai.mcp import MCPServerStreamableHTTP, MCPServerStdio
-from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai.providers.openai import OpenAIProvider
-
-from datetime import date
-from datetime import datetime
-from dotenv import load_dotenv
-load_dotenv()
 
 class RequestJSONdata(BaseModel):
     userRequestText: str
@@ -53,8 +44,8 @@ async def favicon():
 @app.post("/processLLMfetchRequest")
 async def processLLMfetchRequest(requestJSONdata: RequestJSONdata):
     client = AsyncOpenAI(
-        api_key=os.getenv("API_KEY"),
-        base_url=os.getenv("BASE_URL")
+        api_key=os.getenv("API_KEY_LOCAL"),
+        base_url=os.getenv("BASE_URL_LOCAL")
     )
     stream = await client.chat.completions.create(
     messages=[
@@ -63,7 +54,7 @@ async def processLLMfetchRequest(requestJSONdata: RequestJSONdata):
             "content": requestJSONdata.userRequestText
         }
     ],
-    model = os.getenv("LLM_MODEL"),
+    model = os.getenv("LLM_MODEL_LOCAL"),
     stream=True,
     max_tokens=500,
     )
